@@ -16,11 +16,13 @@
 ## 🚀 快速开始
 
 ### 1. 获取项目
+
 ```bash
 # 克隆项目到本地
 
 git clone https://github.com/Xavier-Trump/AIRecipeCraft.git
 cd AIRecipeCraft
+```
 
 ### 2. 配置API密钥（关键步骤！）
 
@@ -47,8 +49,7 @@ cp api.config.js
 
 编辑 api.config.js 文件：
 
-javascript
-
+```javascript
 const API_CONFIG = {
     // 🔑 修改这一行！填入你刚获取的API密钥
     API_KEY: '这里填入你的实际API密钥',  // ← 修改这里
@@ -60,6 +61,7 @@ const API_CONFIG = {
     TEMPERATURE: 0.7,
     MAX_TOKENS: 6000  // ← 可自行修改上限
 };
+```
 
 ### 3. 开始使用
 
@@ -103,8 +105,7 @@ const API_CONFIG = {
 
 ## 🛠️ 项目结构
 
-text
-
+```text
 AI食谱生成器/
 ├── index.html              # 主页面
 ├── style.css               # 样式文件
@@ -114,6 +115,7 @@ AI食谱生成器/
 │   ├── main_background.jpg
 │   └── next_background.jpg
 └── README.md               # 本文件
+```
 
 ## ❓ 常见问题
 
