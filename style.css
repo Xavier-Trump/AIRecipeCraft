@@ -1,0 +1,1214 @@
+css * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    background-image: url('assets/main_background.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* 主题变量：卡片背景使用半透明以显示底图 */
+:root {
+    --card-bg: rgba(255, 255, 255, 0.55);
+    --card-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+/* 头部样式 */
+.header {
+    width: 100%;
+    padding: 20px 0;
+    background-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    text-align: center;
+}
+
+.main-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff9500;
+    margin-bottom: 8px;
+}
+
+.sub-title {
+    font-size: 14px;
+    color: #888;
+}
+
+/* 筛选栏样式 */
+.filter-bar {
+    background-color: var(--card-bg);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 120px;
+}
+
+.filter-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+}
+
+/* 食材输入区域 */
+.ingredient-container {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+}
+
+/* 食材选择卡片（简化版） */
+.ingredient-card {
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ingredient-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.ingredient-card-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.ingredient-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fff3e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #ff9500;
+}
+
+.ingredient-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ingredient-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+}
+
+.ingredient-card-desc {
+    font-size: 13px;
+    color: #999;
+}
+
+.ingredient-card-count {
+    font-size: 14px;
+    color: #ff9500;
+    font-weight: 500;
+}
+
+.ingredient-card-arrow {
+    font-size: 20px;
+    color: #999;
+}
+
+/* 食材选择弹窗 */
+.ingredient-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.ingredient-modal.active {
+    display: flex;
+}
+
+.ingredient-modal-content {
+    background-color: rgba(245, 245, 245, 0.9);
+    width: 90%;
+    max-width: 1000px;
+    height: 85vh;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ingredient-modal-header {
+    background-color: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ingredient-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.ingredient-modal-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #f5f5f5;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.ingredient-modal-close:hover {
+    background-color: #eee;
+}
+
+.ingredient-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.ingredient-modal-footer {
+    background-color: #fff;
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-footer-btn {
+    padding: 10px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-footer-cancel {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.modal-footer-cancel:hover {
+    background-color: #eee;
+}
+
+.modal-footer-confirm {
+    background-color: #ff9500;
+    color: #fff;
+}
+
+.modal-footer-confirm:hover {
+    background-color: #e68600;
+}
+
+/* 智能替代按钮样式 */
+#smartSubstituteBtn:hover:not(:disabled) {
+    background-color: #1976d2;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+#smartSubstituteBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.ingredient-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ingredient-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.category-tab {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: #f5f5f5;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.category-tab.active {
+    background-color: #ff9500;
+    color: #fff;
+}
+
+.subcategory-container {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    padding-left: 15px;
+}
+
+.subcategory-container.active {
+    display: flex;
+}
+
+.subcategory-tab {
+    padding: 4px 10px;
+    border-radius: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.subcategory-tab:hover {
+    border-color: #ff9500;
+    color: #ff9500;
+}
+
+.subcategory-tab.active {
+    background-color: #fff3e0;
+    border-color: #ff9500;
+    color: #ff9500;
+}
+
+.ingredient-search {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.ingredient-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 15px;
+}
+
+.ingredient-item {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.ingredient-item:hover,
+.ingredient-item.selected {
+    border-color: #ff9500;
+    color: #ff9500;
+}
+
+.custom-ingredient {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.custom-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.add-btn {
+    padding: 10px 20px;
+    background-color: #ff9500;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-btn:hover {
+    background-color: #e68600;
+}
+
+.selected-ingredients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    min-height: 40px;
+}
+
+.selected-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background-color: #fff;
+    border: 1px solid #ff9500;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #ff9500;
+}
+
+.close-icon {
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.quantity-input {
+    width: 60px;
+    padding: 2px 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+    outline: none;
+}
+
+.quantity-input:focus {
+    border-color: #ff9500;
+}
+
+.save-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.save-btn,
+.load-btn {
+    padding: 6px 12px;
+    border: 1px solid #ff9500;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #ff9500;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.save-btn:hover,
+.load-btn:hover {
+    background-color: #ff9500;
+    color: #fff;
+}
+
+.save-btn:disabled {
+    background-color: #f5f5f5;
+    color: #ccc;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+
+.save-btn:disabled:hover {
+    background-color: #f5f5f5;
+    color: #ccc;
+}
+
+/* 按钮样式 */
+.generate-btn {
+    width: 100%;
+    height: 45px;
+    background-color: #ff9500;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+}
+
+.generate-btn:hover {
+    background-color: #e68600;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 149, 0, 0.2);
+}
+
+.generate-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 结果区域 */
+.result-container {
+    margin-bottom: 30px;
+}
+
+.loading {
+    text-align: center;
+    color: #888;
+    font-size: 16px;
+    padding: 20px;
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    display: none;
+}
+
+.loading.active {
+    display: block;
+}
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #ff9500;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.recipe-list {
+    display: none;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.recipe-list.active {
+    display: flex;
+}
+
+.empty-tip {
+    text-align: center;
+    padding: 40px 0;
+    color: #888;
+    font-size: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 菜谱卡片样式 */
+.recipe-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.recipe-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    max-width: 70%;
+}
+
+.recipe-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #666;
+}
+
+.meta-tag {
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.tag-easy {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+.tag-medium {
+    background-color: #fff3e0;
+    color: #ff9800;
+}
+
+.tag-hard {
+    background-color: #ffebee;
+    color: #f44336;
+}
+
+.recipe-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.action-btn {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+}
+
+.collect-btn {
+    background-color: #fff;
+    border: 1px solid #ff9500;
+    color: #ff9500;
+}
+
+.collect-btn.active {
+    background-color: #ff9500;
+    color: #fff;
+}
+
+.try-btn {
+    background-color: #fff;
+    border: 1px solid #2196f3;
+    color: #2196f3;
+}
+
+.export-btn {
+    background-color: #fff;
+    border: 1px solid #4caf50;
+    color: #4caf50;
+}
+
+.action-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* 菜谱内容样式 */
+.recipe-section {
+    margin-bottom: 20px;
+}
+
+.recipe-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-icon {
+    color: #ff9500;
+    font-size: 18px;
+}
+
+.ingredient-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ingredient-desc {
+    font-size: 14px;
+    color: #666;
+    padding-left: 20px;
+    position: relative;
+}
+
+.ingredient-desc.has {
+    color: #4caf50;
+}
+
+.ingredient-desc.lack {
+    color: #f44336;
+    text-decoration: line-through;
+}
+
+.ingredient-desc::before {
+    content: "✅";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 12px;
+}
+
+.ingredient-desc.lack::before {
+    content: "❌";
+}
+
+/* 食材复选框样式 */
+.ingredient-checkbox {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    padding: 4px 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.ingredient-check {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.ingredient-text {
+    color: #999;
+    transition: color 0.2s ease;
+}
+
+.ingredient-check:checked + .ingredient-text {
+    color: #4caf50;
+    font-weight: 500;
+}
+
+.recipe-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.step-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ff9500;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.step-content {
+    flex: 1;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* 评价弹窗 */
+.modal-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    display: none;
+}
+
+.modal-mask.active {
+    display: flex;
+}
+
+.modal-container {
+    background-color: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.star-rating {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #ddd;
+}
+
+.star-rating .star {
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.star-rating .star.active {
+    color: #ff9500;
+}
+
+.comment-input {
+    width: 100%;
+    height: 100px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: none;
+    margin-bottom: 20px;
+}
+
+.modal-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cancel-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.confirm-btn {
+    background-color: #ff9500;
+    color: #fff;
+}
+
+/* 购物清单 */
+.shopping-list {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 30px;
+    display: none;
+}
+
+.shopping-list.active {
+    display: block;
+}
+
+.shopping-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.shopping-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.shopping-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.shopping-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.shopping-item:last-child {
+    border-bottom: none;
+}
+
+.shopping-check {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.shopping-name {
+    min-width: 80px;
+    max-width: 150px;
+    font-size: 14px;
+    color: #333;
+}
+
+.shopping-area {
+    font-size: 12px;
+    color: #999;
+    padding: 2px 6px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+
+.quantity-input,
+.note-input {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #333;
+    transition: border-color 0.3s;
+}
+
+.quantity-input:focus,
+.note-input:focus {
+    outline: none;
+    border-color: #ff9500;
+}
+
+.quantity-input {
+    width: 60px;
+}
+
+.note-input {
+    width: 120px;
+}
+
+/* 历史/收藏区域 */
+.tab-bar {
+    display: flex;
+    gap: 0;
+    margin: 30px 0 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-item {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-item.active {
+    border-bottom-color: #ff9500;
+    color: #ff9500;
+    font-weight: 700;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.history-list,
+.collect-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item,
+.collect-item {
+    background-color: var(--card-bg);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.group-checkbox,
+.history-checkbox,
+.collect-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.item-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+}
+
+.item-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.item-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.item-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.item-btn:hover {
+    background-color: #eee;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 24px;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-item {
+        min-width: 100%;
+    }
+
+    .recipe-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .recipe-meta {
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .recipe-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* 选择食材、选择调料、生成历史、我的收藏、常用组合 */
+#ingredientModal .ingredient-modal-content,
+#seasoningModal .ingredient-modal-content,
+#historyModal .ingredient-modal-content,
+#collectModal .ingredient-modal-content,
+#groupModal .ingredient-modal-content,
+#shoppingModal .ingredient-modal-content {
+
+    background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url('assets/next_background.jpg');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+
+.ingredient-modal-header,
+.ingredient-modal-footer {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.empty-tip {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    color: #333;
+    font-weight: 500;
+}
+
+#historyContent>div:first-child,
+#collectContent>div:first-child,
+#recipeList>div:first-child,
+#shoppingContent>div:first-child {
+
+    background: rgba(255, 255, 255, 0.4) !important;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+
+    border-radius: 8px !important;
+}
+
+.history-item,
+.recipe-simple-item,
+.shopping-item {
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.history-item:hover,
+.recipe-simple-item:hover {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+#shoppingModal .shopping-item {
+    background-color: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 12px;
+}
+
+#shoppingModal .shopping-header {
+    display: none;
+}

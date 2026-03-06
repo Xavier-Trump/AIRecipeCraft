@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI食谱生成器 - 冰箱里有啥做啥</title>
+    <!-- 引入外部 CSS 文件 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="main-title">AI食谱生成器</div>
+            <div class="sub-title">冰箱里有啥做啥，解决你的干饭选择困难症</div>
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="filter-bar">
+            <div class="filter-item">
+                <label class="filter-label">菜系筛选</label>
+                <select class="filter-select" id="cuisineFilter">
+                    <option value="不限">不限</option>
+                    <option value="中餐">中餐</option>
+                    <option value="西餐">西餐</option>
+                    <option value="日韩">日韩</option>
+                    <option value="东南亚">东南亚</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label class="filter-label">口味筛选</label>
+                <select class="filter-select" id="tasteFilter">
+                    <option value="不限">不限</option>
+                    <option value="清淡">清淡</option>
+                    <option value="微辣">微辣</option>
+                    <option value="麻辣">麻辣</option>
+                    <option value="酸甜">酸甜</option>
+                    <option value="咸香">咸香</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label class="filter-label">烹饪时间</label>
+                <select class="filter-select" id="timeFilter">
+                    <option value="不限">不限</option>
+                    <option value="15分钟以内">15分钟以内</option>
+                    <option value="30分钟以内">30分钟以内</option>
+                    <option value="1小时以内">1小时以内</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label class="filter-label">难度筛选</label>
+                <select class="filter-select" id="levelFilter">
+                    <option value="不限">不限</option>
+                    <option value="新手友好">新手友好</option>
+                    <option value="家常菜">家常菜</option>
+                    <option value="大厨级">大厨级</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 食材选择卡片 -->
+        <div class="ingredient-card" id="ingredientCard">
+            <div class="ingredient-card-left">
+                <div class="ingredient-card-icon">
+                    <i class="fas fa-carrot"></i>
+                </div>
+                <div class="ingredient-card-info">
+                    <div class="ingredient-card-title">选择/添加你的食材</div>
+                    <div class="ingredient-card-desc">点击进入选择食材</div>
+                </div>
+            </div>
+            <div class="ingredient-card-right">
+                <div class="ingredient-card-count" id="ingredientCount">已选 0 种</div>
+                <div class="ingredient-card-arrow">›</div>
+            </div>
+        </div>
+
+        <!-- 调料选择卡片 -->
+        <div class="ingredient-card" id="seasoningCard" style="margin-top:20px">
+            <div class="ingredient-card-left">
+                <div class="ingredient-card-icon" style="background-color:#fff3e0">
+                    <i class="fas fa-pepper-hot"></i>
+                </div>
+                <div class="ingredient-card-info">
+                    <div class="ingredient-card-title">选择/添加你的调料</div>
+                    <div class="ingredient-card-desc">点击进入选择调料</div>
+                </div>
+            </div>
+            <div class="ingredient-card-right">
+                <div class="ingredient-card-count" id="seasoningCount">已选 0 种</div>
+                <div class="ingredient-card-arrow">›</div>
+            </div>
+        </div>
+
+        <!-- 保存/管理常用食材组合 -->
+        <div class="save-group" style="margin-bottom: 20px;">
+            <button class="save-btn" id="saveGroupBtn"><i class="fas fa-save"></i> 保存常用组合</button>
+            <button class="load-btn" id="manageGroupBtn"><i class="fas fa-list"></i> 我的常用组合</button>
+        </div>
+
+        <!-- 生成按钮 -->
+        <button class="generate-btn" id="generateBtn">开始生成创意食谱</button>
+
+        <!-- 购物清单 -->
+        <div class="ingredient-modal" id="shoppingModal">
+            <div class="ingredient-modal-content">
+                <div class="ingredient-modal-header">
+                    <div class="ingredient-modal-title">
+                        <i class="fas fa-shopping-cart section-icon"></i> 待采购食材清单
+                    </div>
+                    <button class="ingredient-modal-close" id="closeShoppingModal">×</button>
+                </div>
+        
+                <div class="ingredient-modal-body">
+                    <div id="shoppingContent">
+                        <!-- 动态生成采购清单内容 -->
+                    </div>
+                </div>
+        
+                <div class="ingredient-modal-footer">
+                    <button class="modal-footer-btn" id="exportShoppingBtn" style="background-color:#4caf50;color:white">
+                        <i class="fas fa-download"></i> 导出
+                    </button>
+                    <button class="modal-footer-btn" id="clearShoppingBtn" style="background-color:#f44336;color:white">
+                        <i class="fas fa-trash"></i> 清空
+                    </button>
+                    <button class="modal-footer-btn modal-footer-cancel" id="cancelShoppingModal">关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-mask" id="shoppingLoadingModal" style="z-index: 3000;">
+            <div class="modal-container" style="text-align: center; max-width: 300px;">
+                <div style="font-size: 40px; color: #ff9500; margin-bottom: 15px;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px;">
+                    正在生成清单...
+                </div>
+                <div style="font-size: 13px; color: #666;">
+                    AI 正在为您整理完美的购物列表 🛒
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果区域 -->
+        <div class="result-container">
+            <!-- 加载状态 -->
+            <div class="loading" id="loading">
+                <span class="spinner"></span>
+                AI正在为你创意搭配，稍等片刻...
+            </div>
+            <!-- 菜谱列表 -->
+            <div class="recipe-list" id="recipeList">
+                <!-- 动态生成菜谱卡片 -->
+            </div>
+            <!-- 空数据提示 -->
+            <div class="empty-tip" id="emptyTip" style="display:none">
+                暂无生成的菜谱，快来点击生成按钮吧！
+            </div>
+        </div>
+
+        <!-- 生成历史卡片 -->
+        <div class="ingredient-card" id="historyCard">
+            <div class="ingredient-card-left">
+                <div class="ingredient-card-icon" style="background-color:#e3f2fd">
+                    <i class="fas fa-history" style="color:#2196f3"></i>
+                </div>
+                <div class="ingredient-card-info">
+                    <div class="ingredient-card-title">生成历史</div>
+                    <div class="ingredient-card-desc">查看历史生成的菜谱</div>
+                </div>
+            </div>
+            <div class="ingredient-card-right">
+                <div class="ingredient-card-count" id="historyCountDisplay">共 0 条</div>
+                <div class="ingredient-card-arrow">›</div>
+            </div>
+        </div>
+
+        <!-- 我的收藏卡片 -->
+        <div class="ingredient-card" id="collectCard" style="margin-top:20px">
+            <div class="ingredient-card-left">
+                <div class="ingredient-card-icon" style="background-color:#fce4ec">
+                    <i class="fas fa-heart" style="color:#e91e63"></i>
+                </div>
+                <div class="ingredient-card-info">
+                    <div class="ingredient-card-title">我的收藏</div>
+                    <div class="ingredient-card-desc">查看收藏的菜谱</div>
+                </div>
+            </div>
+            <div class="ingredient-card-right">
+                <div class="ingredient-card-count" id="collectCountDisplay">共 0 条</div>
+                <div class="ingredient-card-arrow">›</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 生成历史弹窗 -->
+    <div class="ingredient-modal" id="historyModal">
+        <div class="ingredient-modal-content">
+            <div class="ingredient-modal-header">
+                <div class="ingredient-modal-title">生成历史</div>
+                <button class="ingredient-modal-close" id="closeHistoryModal">×</button>
+            </div>
+            <div class="ingredient-modal-body">
+                <div id="historyContent"></div>
+            </div>
+            <div class="ingredient-modal-footer">
+                <button class="modal-footer-btn modal-footer-cancel" id="cancelHistoryModal">关闭</button>
+                <button class="modal-footer-btn" id="clearHistoryBtn" style="background-color:#f44336;color:white">一键清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的收藏弹窗 -->
+    <div class="ingredient-modal" id="collectModal">
+        <div class="ingredient-modal-content">
+            <div class="ingredient-modal-header">
+                <div class="ingredient-modal-title">我的收藏</div>
+                <button class="ingredient-modal-close" id="closeCollectModal">×</button>
+            </div>
+            <div class="ingredient-modal-body">
+                <div id="collectContent"></div>
+            </div>
+            <div class="ingredient-modal-footer">
+                <button class="modal-footer-btn modal-footer-cancel" id="cancelCollectModal">关闭</button>
+                <button class="modal-footer-btn" id="clearCollectBtn" style="background-color:#f44336;color:white">一键清空</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 常用组合管理弹窗 -->
+    <div class="ingredient-modal" id="groupModal">
+        <div class="ingredient-modal-content">
+            <div class="ingredient-modal-header">
+                <div class="ingredient-modal-title">常用组合管理</div>
+                <button class="ingredient-modal-close" id="closeGroupModal">×</button>
+            </div>
+            <div class="ingredient-modal-body">
+                <div id="groupContent"></div>
+            </div>
+            <div class="ingredient-modal-footer">
+                <button class="modal-footer-btn" id="bulkDeleteGroupBtn" style="background-color:#f44336;color:white">一键删除</button>
+                <button class="modal-footer-btn modal-footer-cancel" id="cancelGroupModal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 食材选择弹窗 -->
+    <div class="ingredient-modal" id="ingredientModal">
+        <div class="ingredient-modal-content">
+            <div class="ingredient-modal-header">
+                <div class="ingredient-modal-title">选择/添加你的食材</div>
+                <button class="ingredient-modal-close" id="closeIngredientModal">×</button>
+            </div>
+            <div class="ingredient-modal-body">
+                <!-- 食材分类标签 -->
+                <div class="ingredient-categories">
+                    <div class="category-tab active" data-category="all" data-type="ingredient">全部</div>
+                    <div class="category-tab" data-category="vegetable" data-type="ingredient">蔬菜</div>
+                    <div class="category-tab" data-category="meat" data-type="ingredient">肉类</div>
+                    <div class="category-tab" data-category="seafood" data-type="ingredient">海鲜</div>
+                    <div class="category-tab" data-category="staple" data-type="ingredient">主食</div>
+                </div>
+                <!-- 子分类及食材列表 (为节省篇幅，保持原有的大量 div 结构) -->
+                <!-- 蔬菜子分类 -->
+                <div class="subcategory-container" id="vegetable-subcategory" data-parent="vegetable"
+                    data-type="ingredient">
+                    <div class="subcategory-tab active" data-category="vegetable" data-subcategory="all"
+                        data-type="ingredient">全部</div>
+                    <div class="subcategory-tab" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">叶菜类</div>
+                    <div class="subcategory-tab" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">瓜茄类</div>
+                    <div class="subcategory-tab" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">根茎类</div>
+                    <div class="subcategory-tab" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">菌菇类</div>
+                    <div class="subcategory-tab" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豆荚类</div>
+                </div>
+                <!-- 肉类子分类 -->
+                <div class="subcategory-container" id="meat-subcategory" data-parent="meat" data-type="ingredient">
+                    <div class="subcategory-tab active" data-category="meat" data-subcategory="all"
+                        data-type="ingredient">全部</div>
+                    <div class="subcategory-tab" data-category="meat" data-subcategory="pork" data-type="ingredient">猪肉类
+                    </div>
+                    <div class="subcategory-tab" data-category="meat" data-subcategory="beef" data-type="ingredient">牛肉类
+                    </div>
+                    <div class="subcategory-tab" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊肉类
+                    </div>
+                    <div class="subcategory-tab" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        禽肉类</div>
+                    <div class="subcategory-tab" data-category="meat" data-subcategory="egg" data-type="ingredient">禽蛋类
+                    </div>
+                </div>
+                <!-- 海鲜子分类 -->
+                <div class="subcategory-container" id="seafood-subcategory" data-parent="seafood"
+                    data-type="ingredient">
+                    <div class="subcategory-tab active" data-category="seafood" data-subcategory="all"
+                        data-type="ingredient">全部</div>
+                    <div class="subcategory-tab" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鱼类</div>
+                    <div class="subcategory-tab" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">虾蟹贝类</div>
+                    <div class="subcategory-tab" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">其他海鲜</div>
+                </div>
+                <!-- 主食子分类 -->
+                <div class="subcategory-container" id="staple-subcategory" data-parent="staple" data-type="ingredient">
+                    <div class="subcategory-tab active" data-category="staple" data-subcategory="all"
+                        data-type="ingredient">全部</div>
+                    <div class="subcategory-tab" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        米面类</div>
+                    <div class="subcategory-tab" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">杂粮类</div>
+                    <div class="subcategory-tab" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        薯芋类</div>
+                </div>
+                <!-- 食材搜索 -->
+                <div class="ingredient-search">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="ingredientSearch" placeholder="搜索食材，如：鸡蛋、番茄">
+                </div>
+                <!-- 食材列表（按分类） -->
+                <div class="ingredient-list" id="ingredientList">
+                    <!-- 蔬菜 - 叶菜类 -->
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">白菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">小白菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">娃娃菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">大白菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">卷心菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">紫甘蓝</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">生菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">油麦菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">菠菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">茼蒿</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">芹菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">韭菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">香菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">空心菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">油菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">芥菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">苋菜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">茴香</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="leafy"
+                        data-type="ingredient">芥蓝</div>
+
+                    <!-- 蔬菜 - 瓜茄类 -->
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">番茄</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">黄瓜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">茄子</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">青椒</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">红椒</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">黄椒</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">彩椒</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">尖椒</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">朝天椒</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">南瓜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">冬瓜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">丝瓜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">苦瓜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="gourd"
+                        data-type="ingredient">西葫芦</div>
+
+                    <!-- 蔬菜 - 根茎类 -->
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">土豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">红薯</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">山药</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">芋头</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">莲藕</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">胡萝卜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">白萝卜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">青萝卜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">红萝卜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">洋葱</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">大葱</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">小葱</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">姜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">蒜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">大蒜</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">蒜苗</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">蒜薹</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">竹笋</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">莴笋</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="root"
+                        data-type="ingredient">芦笋</div>
+
+                    <!-- 蔬菜 - 菌菇类 -->
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">香菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">平菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">金针菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">杏鲍菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">口蘑</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">草菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">茶树菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">猴头菇</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">木耳</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">银耳</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">海带</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="mushroom"
+                        data-type="ingredient">紫菜</div>
+
+                    <!-- 蔬菜 - 豆荚类 -->
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豆腐</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豆干</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豆皮</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">腐竹</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豆芽</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">黄豆芽</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">绿豆芽</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">四季豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豇豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">荷兰豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">豌豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">毛豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">蚕豆</div>
+                    <div class="ingredient-item" data-category="vegetable" data-subcategory="bean"
+                        data-type="ingredient">扁豆</div>
+
+                    <!-- 肉类 - 猪肉类 -->
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">五花肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">里脊肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">梅花肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">前腿肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">后腿肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪蹄
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪排骨
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪大骨
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪肝
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪腰
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪肚
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪心
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪舌
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪耳朵
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="pork" data-type="ingredient">猪血
+                    </div>
+
+                    <!-- 肉类 - 牛肉类 -->
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛腩
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛腱
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛排
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛里脊
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛肋条
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛尾
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛肚
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛筋
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="beef" data-type="ingredient">牛舌
+                    </div>
+
+                    <!-- 肉类 - 羊肉类 -->
+                    <div class="ingredient-item" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊肉
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊排
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊腿
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊蝎子
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊肚
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="lamb" data-type="ingredient">羊肝
+                    </div>
+
+                    <!-- 肉类 - 禽肉类 -->
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡肉</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡胸肉</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡腿肉</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡翅</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡爪</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡心</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡肝</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸡胗</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        整鸡</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸭肉</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸭腿</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸭胸</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸭舌</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鸭血</div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="poultry" data-type="ingredient">
+                        鹅肉</div>
+
+                    <!-- 肉类 - 禽蛋类 -->
+                    <div class="ingredient-item" data-category="meat" data-subcategory="egg" data-type="ingredient">鸡蛋
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="egg" data-type="ingredient">鸭蛋
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="egg" data-type="ingredient">鹌鹑蛋
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="egg" data-type="ingredient">皮蛋
+                    </div>
+                    <div class="ingredient-item" data-category="meat" data-subcategory="egg" data-type="ingredient">咸蛋
+                    </div>
+
+                    <!-- 海鲜 - 鱼类 -->
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鲈鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        草鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鲫鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鲤鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        带鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        黄鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鳕鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        三文鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        金枪鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鲳鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        鲅鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        秋刀鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        多宝鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        桂鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="fish" data-type="ingredient">
+                        黑鱼</div>
+
+                    <!-- 海鲜 - 虾蟹贝类 -->
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">虾</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">大虾</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">基围虾</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">明虾</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">龙虾</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">虾仁</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">螃蟹</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">大闸蟹</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">梭子蟹</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">扇贝</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">生蚝</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">蛤蜊</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">花甲</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">蛏子</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">鲍鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">海螺</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="shellfish"
+                        data-type="ingredient">田螺</div>
+
+                    <!-- 海鲜 - 其他海鲜 -->
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">鱿鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">墨鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">章鱼</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">海参</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">海蜇</div>
+                    <div class="ingredient-item" data-category="seafood" data-subcategory="other_seafood"
+                        data-type="ingredient">海胆</div>
+
+                    <!-- 主食 - 米面类 -->
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        米饭</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        大米</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        糯米</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        黑米</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        小米</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        面条</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        挂面</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        意面</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        乌冬面</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        拉面</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        刀削面</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        米粉</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        米线</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        粉丝</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        粉条</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        面粉</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        饺子皮</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        馄饨皮</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="grain" data-type="ingredient">
+                        春卷皮</div>
+
+                    <!-- 主食 - 杂粮类 -->
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">玉米</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">燕麦</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">荞麦</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">高粱</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">薏米</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">红豆</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">绿豆</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">黑豆</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">黄豆</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="cereal"
+                        data-type="ingredient">花生</div>
+
+                    <!-- 主食 - 薯芋类 -->
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        馒头</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        花卷</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        包子</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        烧饼</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        油条</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        面包</div>
+                    <div class="ingredient-item" data-category="staple" data-subcategory="tuber" data-type="ingredient">
+                        吐司</div>
+                </div>
+                <!-- 自定义食材输入 -->
+                <div class="custom-ingredient">
+                    <input type="text" class="custom-input" id="customIngredient" placeholder="请输入你要添加的食材，例如：番茄、鸡蛋">
+                    <button class="add-btn" id="addIngredientBtn"><i class="fas fa-plus"></i> 添加</button>
+                </div>
+                <!-- 已选食材展示 -->
+                <div class="selected-ingredients" id="selectedIngredients"></div>
+            </div>
+            <div class="ingredient-modal-footer">
+                <button class="modal-footer-btn" id="clearAllIngredientsBtn" style="background-color:#f44336;color:white">一键清空</button>
+                <button class="modal-footer-btn modal-footer-cancel" id="cancelIngredientModal">取消</button>
+                <button class="modal-footer-btn modal-footer-confirm" id="confirmIngredientModal">确认</button>
+            </div>
+        </div>
+    </div>
+    <!-- 调料选择弹窗 -->
+    <div class="ingredient-modal" id="seasoningModal">
+        <div class="ingredient-modal-content">
+            <div class="ingredient-modal-header">
+                <div class="ingredient-modal-title">选择/添加你的调料</div>
+                <button class="ingredient-modal-close" id="closeSeasoningModal">×</button>
+            </div>
+            <div class="ingredient-modal-body">
+                <!-- 调料分类标签 -->
+                <div class="ingredient-categories">
+                    <div class="category-tab active" data-category="all" data-type="seasoning">全部</div>
+                    <div class="category-tab" data-category="basic" data-type="seasoning">基础调料</div>
+                    <div class="category-tab" data-category="spice" data-type="seasoning">香料</div>
+                    <div class="category-tab" data-category="sauce" data-type="seasoning">酱料</div>
+                </div>
+                <!-- 调料搜索 -->
+                <div class="ingredient-search">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="seasoningSearch" placeholder="搜索调料，如：蒜、辣椒">
+                </div>
+                <!-- 调料列表（按分类） -->
+                <div class="ingredient-list" id="seasoningList">
+                    <!-- 基础调料 -->
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">食用盐</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">白砂糖</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">冰糖</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">花生油</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">玉米油</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">芝麻油</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">生抽</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">老抽</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">蚝油</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">料酒</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">陈醋</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">米醋</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">白胡椒粉</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">黑胡椒粉</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">鸡精</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">味精</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">淀粉</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">生姜</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">大蒜</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">大葱</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">干辣椒</div>
+                    <div class="ingredient-item" data-category="basic" data-type="seasoning">花椒</div>
+    
+                    <!-- 香料 -->
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">八角</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">桂皮</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">香叶</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">小茴香</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">孜然</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">陈皮</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">草果</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">肉蔻</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">良姜</div>
+                    <div class="ingredient-item" data-category="spice" data-type="seasoning">山奈</div>
+    
+                    <!-- 酱料 -->
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">豆瓣酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">甜面酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">黄豆酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">芝麻酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">花生酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">蒜蓉辣酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">剁椒酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">番茄酱</div>
+                    <div class="ingredient-item" data-category="sauce" data-type="seasoning">沙拉酱</div>
+                </div>
+                <!-- 自定义调料输入 -->
+                <div class="custom-ingredient">
+                    <input type="text" class="custom-input" id="customSeasoning" placeholder="请输入你要添加的调料，例如：蒜、辣椒">
+                    <button class="add-btn" id="addSeasoningBtn"><i class="fas fa-plus"></i> 添加</button>
+                </div>
+                <!-- 已选调料展示 -->
+                <div class="selected-ingredients" id="selectedSeasonings"></div>
+            </div>
+            <div class="ingredient-modal-footer">
+                <button class="modal-footer-btn" id="clearAllSeasoningsBtn" style="background-color:#f44336;color:white">一键清空</button>
+                <button class="modal-footer-btn modal-footer-cancel" id="cancelSeasoningModal">取消</button>
+                <button class="modal-footer-btn modal-footer-confirm" id="confirmSeasoningModal">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 评价弹窗 -->
+    <div class="modal-mask" id="evaluateModal">
+        <div class="modal-container">
+            <div class="modal-title">为这道菜打个分吧</div>
+            <div class="star-rating" id="starRating">
+                <div class="star"><i class="fas fa-star"></i></div>
+                <div class="star"><i class="fas fa-star"></i></div>
+                <div class="star"><i class="fas fa-star"></i></div>
+                <div class="star"><i class="fas fa-star"></i></div>
+                <div class="star"><i class="fas fa-star"></i></div>
+            </div>
+            <textarea class="comment-input" id="commentInput" placeholder="说说你的烹饪心得吧..."></textarea>
+            <div class="modal-btns">
+                <button class="modal-btn cancel-btn" id="cancelEvaluate">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmEvaluate">确认评价</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 菜谱详情弹窗 -->
+    <div class="ingredient-modal" id="recipeDetailModal">
+        <div class="ingredient-modal-content" style="max-width: 800px;">
+            <div class="ingredient-modal-header">
+                <div class="ingredient-modal-title">菜谱详情</div>
+                <button class="ingredient-modal-close" id="closeRecipeDetailModal">×</button>
+            </div>
+            <div class="ingredient-modal-body">
+                <div id="recipeDetailContent"></div>
+            </div>
+            <div class="ingredient-modal-footer">
+                <button class="modal-footer-btn modal-footer-cancel" id="cancelRecipeDetailModal">关闭</button>
+            </div>
+        </div>
+    </div>
+    <!-- 引入API配置文件 -->
+    <script src="api.config.js"></script>
+    <!-- 引入核心业务代码 -->
+    <script src="script.js"></script>
+</body>
+    
+</html>
